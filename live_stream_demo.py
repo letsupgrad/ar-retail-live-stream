@@ -1,86 +1,98 @@
 import streamlit as st
+import streamlit_authenticator as stauth
+from datetime import datetime
+import random
 from PIL import Image
+import os
 
-# Streamlit page configuration
-st.set_page_config(page_title="Eco-Friendly Outdoor Displays", page_icon="🌱", layout="wide")
+# ---- AUTHENTICATION ----
+credentials_dict = {
+    "usernames": {
+        "growuser": {"name": "Green User", "password": "pass123"},
+        "sponsor1": {"name": "Sponsor One", "password": "sponsorpass"}
+    }
+}
 
-# Title and description of the app
-st.title("Eco-Friendly, Sustainable Outdoor Displays")
-st.header("Eco-Friendly Outdoor Branding and Display Concepts")
-st.subheader("Highlighting sustainable materials and green initiatives")
+authenticator = stauth.Authenticate(
+    credentials_dict, "growvertising_app", "abcdef", cookie_expiry_days=1
+)
 
-# Section 1: Introduction to Eco-Friendly Branding
-st.write("""
-    **Eco-Friendly Outdoor Displays** are a powerful way to showcase sustainable practices while enhancing your brand's environmental responsibility. 
-    Imagine outdoor billboards made from recycled wood or biodegradable materials, complemented by green features like live plant walls or vertical gardens.
-    These displays attract eco-conscious consumers and improve your brand's perception.
-""")
+name, auth_status, username = authenticator.login("Login", "main")
 
-# Add a slider to choose display type: Wood, Biodegradable, or Vertical Garden
-st.write("### Select Type of Eco-Friendly Display:")
-display_type = st.selectbox("Choose your display material:", ["Recycled Wood", "Biodegradable Components", "Vertical Garden"])
+if not auth_status:
+    st.warning("Please log in to access the app.")
+    st.stop()
 
-# Section 2: Visualize the Concept (with Image of Selected Display Type)
-if display_type == "Recycled Wood":
-    st.image("assets/recycled_wood_display.jpg", caption="Eco-Friendly Outdoor Billboard with Recycled Wood", use_container_width=True)
-elif display_type == "Biodegradable Components":
-    st.image("assets/biodegradable_display.jpg", caption="Outdoor Billboard with Biodegradable Materials", use_container_width=True)
+st.sidebar.success(f"Welcome, {name}!")
+
+# ---- HEADER ----
+st.title("🌿 Growvertising – Billboard to Farmboard")
+st.markdown("Turn every ad into action – grow plants, offset carbon, and join the green movement.")
+
+# ---- BILLBOARD PREVIEW ----
+st.subheader("🖼️ Billboard Preview")
+billboards = {
+    "Grow Your Greens": "https://i.imgur.com/U4A0lRQ.jpg",
+    "From Message to Meal": "https://i.imgur.com/GQhuf0U.jpg",
+    "Food Waste Awareness": "https://i.imgur.com/XY5NJJx.jpg"
+}
+
+selected_ad = st.selectbox("Select Campaign", list(billboards.keys()))
+st.image(billboards[selected_ad], caption=selected_ad, use_column_width=True)
+
+# ---- GROWTH SIM ----
+st.subheader("🌱 Billboard Growth Status")
+growth = st.slider("Simulated Growth Level (%)", 0, 100, 75)
+st.progress(growth / 100)
+
+# ---- COMMUNITY PHOTO WALL ----
+st.subheader("📸 Upload Your Plant")
+uploaded_file = st.file_uploader("Share your plant progress!", type=["jpg", "png"])
+caption = st.text_input("Caption")
+
+if uploaded_file and caption:
+    # Save file locally for display
+    img_path = f"temp_upload_{datetime.now().timestamp()}.jpg"
+    with open(img_path, "wb") as f:
+        f.write(uploaded_file.read())
+    st.image(Image.open(img_path), caption=caption, use_column_width=True)
+    st.success("Uploaded successfully!")
+
+# ---- COMMENT WALL ----
+st.subheader("💬 Comment Wall")
+with st.form("comment_form"):
+    comment = st.text_area("What's on your mind?", max_chars=250)
+    if st.form_submit_button("Post") and comment:
+        if "comments" not in st.session_state:
+            st.session_state["comments"] = []
+        st.session_state["comments"].append({
+            "user": name,
+            "comment": comment,
+            "timestamp": str(datetime.now())
+        })
+        st.success("Comment posted!")
+
+# Show recent comments
+st.markdown("### Recent Comments:")
+if "comments" in st.session_state:
+    for entry in reversed(st.session_state["comments"][-5:]):
+        st.markdown(f"**{entry['user']}** says: \n> {entry['comment']}")
+
+# ---- BADGES ----
+st.subheader("🏅 Your Grower Badge")
+activity_score = random.randint(10, 100)
+if activity_score > 80:
+    badge = "🌟 Super Grower"
+elif activity_score > 50:
+    badge = "🌿 Urban Farmer"
 else:
-    st.image("assets/vertical_garden_display.jpg", caption="Outdoor Billboard with Vertical Garden", use_container_width=True)
+    badge = "🍀 Green Starter"
 
-# Section 3: Interactive Elements (Describe Materials and Benefits)
-st.write("### Materials Used in Selected Display:")
-if display_type == "Recycled Wood":
-    st.markdown("""
-    - **Recycled Wood**: Repurposed wood from old furniture, construction, or other sources.
-    - **Durable & Long-Lasting**: Ideal for outdoor displays that need to withstand weathering.
-    - **Low Environmental Impact**: Reduces the need for new timber and minimizes waste.
-    """)
-elif display_type == "Biodegradable Components":
-    st.markdown("""
-    - **Biodegradable Components**: Materials that decompose naturally, reducing landfill waste.
-    - **Non-Toxic**: Safe for the environment and wildlife.
-    - **Eco-Conscious Messaging**: Perfect for brands that want to show a commitment to sustainability.
-    """)
-else:
-    st.markdown("""
-    - **Vertical Garden**: A living wall made with plants and flowers that help improve air quality.
-    - **Solar-Powered**: Powered by renewable energy to reduce carbon footprint.
-    - **Aesthetic Appeal**: Adds beauty to the environment while contributing to sustainability.
-    """)
+st.markdown(f"**Badge:** `{badge}`")
+st.progress(activity_score / 100)
 
-# Section 4: Benefits of Eco-Friendly Branding
-st.write("### Benefits of Eco-Friendly Outdoor Displays:")
-st.markdown("""
-- **Appeals to Eco-Conscious Consumers**: More and more people prefer brands that are committed to sustainability.
-- **Improves Brand Perception**: Demonstrating a commitment to the environment can enhance a brand's image.
-- **Supports Green Initiatives**: Outdoor displays with plants or solar power contribute to environmental conservation.
-- **Stand Out in a Crowded Market**: Unique, eco-friendly designs catch the eye of passersby and stand out from traditional advertising.
-""")
-
-# Section 5: Interactive Slider to Visualize Plant Growth in Display
-st.write("### How a Vertical Garden Can Grow Over Time:")
-growth_time = st.slider("Select time for plant growth (months)", 1, 12, 6)
-st.write(f"Growth stage: {growth_time} months")
-
-# Simulate plant growth stages with images (replace with your own images)
-if growth_time <= 3:
-    st.image("assets/plant_stage_1.jpg", caption="Early Growth Stage", use_container_width=True)
-elif 4 <= growth_time <= 6:
-    st.image("assets/plant_stage_2.jpg", caption="Mid Growth Stage", use_container_width=True)
-else:
-    st.image("assets/plant_stage_3.jpg", caption="Full Growth Stage", use_container_width=True)
-
-# Section 6: Call to Action (CTA) for Eco-Conscious Consumers
-st.markdown("""
-    **Ready to Go Green?** 🌱
-    Embrace eco-friendly branding by incorporating sustainable outdoor displays in your marketing strategy. 
-    By using recycled materials and integrating plant life into your displays, you can engage with an environmentally conscious audience and make a positive impact.
-""")
-cta_button = st.button("Learn More About Sustainable Branding")
-if cta_button:
-    st.write("Thank you for your interest in sustainable branding! Please visit our website for more details.")
-
-# Footer
-st.markdown("---")
-st.markdown("For more details, visit our website or follow us on social media.")
+# ---- SPONSOR DASHBOARD ----
+st.subheader("📊 Sponsor Dashboard")
+st.metric("Total Plants Grown", "1,230 🌱", "+230 this week")
+st.metric("CO₂ Offset", "420 kg", "+35 kg")
+st.metric("Seed Kits Claimed", "890", "+102")
