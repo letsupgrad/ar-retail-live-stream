@@ -22,11 +22,11 @@ display_type = st.selectbox("Choose your display material:", ["Recycled Wood", "
 
 # Section 2: Visualize the Concept (with Image of Selected Display Type)
 if display_type == "Recycled Wood":
-    st.image("recycled_wood_display.jpg", caption="Eco-Friendly Outdoor Billboard with Recycled Wood", use_container_width=True)
+    st.image("assets/recycled_wood_display.jpg", caption="Eco-Friendly Outdoor Billboard with Recycled Wood", use_container_width=True)
 elif display_type == "Biodegradable Components":
-    st.image("biodegradable_display.jpg", caption="Outdoor Billboard with Biodegradable Materials", use_container_width=True)
+    st.image("assets/biodegradable_display.jpg", caption="Outdoor Billboard with Biodegradable Materials", use_container_width=True)
 else:
-    st.image("vertical_garden_display.jpg", caption="Outdoor Billboard with Vertical Garden", use_container_width=True)
+    st.image("assets/vertical_garden_display.jpg", caption="Outdoor Billboard with Vertical Garden", use_container_width=True)
 
 # Section 3: Interactive Elements (Describe Materials and Benefits)
 st.write("### Materials Used in Selected Display:")
@@ -65,11 +65,11 @@ st.write(f"Growth stage: {growth_time} months")
 
 # Simulate plant growth stages with images (replace with your own images)
 if growth_time <= 3:
-    st.image("plant_stage_1.jpg", caption="Early Growth Stage", use_container_width=True)
+    st.image("assets/plant_stage_1.jpg", caption="Early Growth Stage", use_container_width=True)
 elif 4 <= growth_time <= 6:
-    st.image("plant_stage_2.jpg", caption="Mid Growth Stage", use_container_width=True)
+    st.image("assets/plant_stage_2.jpg", caption="Mid Growth Stage", use_container_width=True)
 else:
-    st.image("plant_stage_3.jpg", caption="Full Growth Stage", use_container_width=True)
+    st.image("assets/plant_stage_3.jpg", caption="Full Growth Stage", use_container_width=True)
 
 # Section 6: Call to Action (CTA) for Eco-Conscious Consumers
 st.markdown("""
@@ -84,4 +84,3 @@ if cta_button:
 # Footer
 st.markdown("---")
 st.markdown("For more details, visit our website or follow us on social media.")
-
