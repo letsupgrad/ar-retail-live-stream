@@ -2,42 +2,50 @@ import streamlit as st
 import cv2
 import time
 
-# Title of the app
+# Streamlit page configuration
+st.set_page_config(page_title="Live Product Demo", page_icon="📦", layout="wide")
+
+# Title and header for the demo
 st.title("Live-Streamed Events & Product Demos")
+st.header("Live Streaming: Live Demo of Product XYZ")
+st.subheader("Watch our latest product demo live!")
 
-# Sidebar for controls
-st.sidebar.header("Stream Controls")
-event_description = st.sidebar.text_area("Event Description", "Live Demo of Product XYZ")
-stream_status = st.sidebar.radio("Stream Status", ("Not Started", "Streaming"))
+# Video path (Replace with your own video file path or URL)
+video_path = "path_to_your_video.mp4"  # Example: "product_demo.mp4"
 
-# Video capture setup (can be from webcam or external camera)
-cap = cv2.VideoCapture(0)  # Use 0 for webcam or provide video file path
+# Function to stream video from a file using OpenCV
+def stream_video(video_path):
+    # Create a placeholder for the video
+    frame_window = st.image([], use_container_width=True)
 
-# Function to display video stream
-def stream_video():
-    frame_window = st.image([], use_column_width=True)  # Create placeholder for live video feed
+    # Open the video file
+    cap = cv2.VideoCapture(video_path)
 
-    while True:
+    # Check if video was opened successfully
+    if not cap.isOpened():
+        st.error("Error: Could not access the video file")
+        return
+
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             st.error("Failed to capture video")
             break
 
-        # Display the frame (OpenCV to Streamlit conversion)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_window.image(frame)
+        # Convert the frame from BGR to RGB (OpenCV uses BGR)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        time.sleep(0.1)  # To simulate stream delay (adjust as needed)
+        # Display the frame
+        frame_window.image(frame_rgb)
 
-# Product Demo Streaming
-if stream_status == "Streaming":
-    st.header("Live Streaming: " + event_description)
-    st.subheader("Watch our latest product demo live!")
-    stream_video()
+        # Add a small delay to simulate real-time streaming
+        time.sleep(0.1)
 
-else:
-    st.info("Press 'Streaming' on the sidebar to start broadcasting!")
+    cap.release()
 
-# Footer
+# Start streaming the video
+stream_video(video_path)
+
+# Footer with additional information
 st.markdown("---")
 st.markdown("For more details about our events, visit our website or follow us on social media.")
