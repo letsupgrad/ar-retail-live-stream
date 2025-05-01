@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Interactive AR Billboard</title>
+</head>
+<body>
+  <h1>Welcome to Our AR Billboard</h1>
+  <p>Scan the QR code below for a special offer!</p>
+  <img src="/generate_qr" alt="Scan for discount" />
+
+  <p>Point your camera at the billboard marker to unlock AR view (AR handled in mobile app or AR.js)</p>
+</body>
+</html>
